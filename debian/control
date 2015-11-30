@@ -24,6 +24,7 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  pavucontrol
+Replaces: xfce4-mixer
 Description: PulseAudio controller for the system tray
  Pasystray enables control of various PulseAudio server settings from the X11
  system tray. It can:

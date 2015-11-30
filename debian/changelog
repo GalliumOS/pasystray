@@ -1,3 +1,9 @@
+pasystray (0.4.0.2-3) unstable; urgency=low
+
+  * Added a Replaces line to replaces xfce4-mixer
+
+ -- Hugh Greenberg <hugh@galliumos>  Sun, 29 Nov 2015 18:00:59 +1100
+
 pasystray (0.4.0.2-2) unstable; urgency=low
 
   * Mods for GalliumOS
