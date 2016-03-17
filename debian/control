@@ -22,8 +22,12 @@ Architecture: any
 Depends:
  gnome-icon-theme,
  ${misc:Depends},
- ${shlibs:Depends},
- pavucontrol
+ ${shlibs:Depends}
+Suggests:
+ paman,
+ paprefs,
+ pavumeter,
+ pulseaudio-module-zeroconf
 Description: PulseAudio controller for the system tray
  Pasystray enables control of various PulseAudio server settings from the X11
  system tray. It can:
@@ -31,4 +35,5 @@ Description: PulseAudio controller for the system tray
     * transfer streams between sinks/sources
     * switch the default sink/source
     * set the default server (PULSE_SERVER)
+    * detect network PulseAudio services
     * rename devices

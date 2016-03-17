@@ -1,0 +1,17 @@
+From: Scott Leggett <scott@sl.id.au>
+Date: Sun, 10 Nov 2013 17:31:11 +1100
+Subject: Add keywords entry to desktop file.
+
+---
+ data/pasystray.desktop |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/data/pasystray.desktop b/data/pasystray.desktop
+index 621b63b..3915f70 100644
+--- a/data/pasystray.desktop
++++ b/data/pasystray.desktop
+@@ -8,3 +8,4 @@ Icon=pasystray
+ StartupNotify=true
+ Type=Application
+ Categories=AudioVideo;Audio;
++Keywords=pulseaudio;tray;system tray;applet;volume

@@ -126,10 +126,9 @@ void pulseaudio_volume(menu_info_item_t* mii, int inc)
     pa_cvolume* volume;
     if(inc < 0)
         volume = pa_cvolume_dec(mii->volume, -inc * PA_VOLUME_NORM / 50);
-    else if(inc > 0) {
-	volume = pa_cvolume_inc_clamp(mii->volume, inc * PA_VOLUME_NORM / 50,
-				      PA_VOLUME_NORM * 100 / 100);
-    } else
+    else if(inc > 0)
+        volume = pa_cvolume_inc(mii->volume, inc * PA_VOLUME_NORM / 50);
+    else
         return;
 
     pa_operation* o = NULL;
@@ -170,6 +169,8 @@ void pulseaudio_set_volume_success_cb(pa_context *c, int success, void *userdata
                 menu_info_type_name(mii->menu_info->type), mii->name);
         return;
     }
+
+    pulseaudio_update_volume_notification(mii);
 }
 
 void pulseaudio_update_volume_notification(menu_info_item_t* mii)

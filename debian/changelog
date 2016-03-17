@@ -1,3 +1,10 @@
+pasystray (0.4.0-1galliumos4) xenial; urgency=low
+
+  * Put GalliumOS changes into patches
+  * New package for xenial
+
+ -- Hugh Greenberg <hugh@galliumos.org>  Wed, 16 Mar 2016 21:05:33 +0000
+
 pasystray (0.4.0-1galliumos3) vivid-galliumos; urgency=low
 
   * Set package version to match provenance

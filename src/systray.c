@@ -44,9 +44,17 @@ void systray_menu_create(menu_infos_t* mis)
     systray_rootmenu_add_submenu(mis, MENU_OUTPUT, "Recording Stre_ams", "player_record");
     systray_menu_add_separator(mis->menu);
 
+    static const char* COMMAND_PAMAN = "paman";
     static const char* COMMAND_PAVUCONTROL = "pavucontrol";
+    static const char* COMMAND_PAVUMETER = "pavumeter";
+    static const char* COMMAND_PAVUMETER_REC = "pavumeter --record";
+    static const char* COMMAND_PAPREFS = "paprefs";
 
+    systray_menu_add_application(mis->menu, "_Manager...", NULL, COMMAND_PAMAN);
     systray_menu_add_application(mis->menu, "Volume _Control...", NULL, COMMAND_PAVUCONTROL);
+    systray_menu_add_application(mis->menu, "Volume Meter (_Playback)...", NULL, COMMAND_PAVUMETER);
+    systray_menu_add_application(mis->menu, "Volume Meter (_Recording)...", NULL, COMMAND_PAVUMETER_REC);
+    systray_menu_add_application(mis->menu, "Con_figure Local Sound Server...", NULL, COMMAND_PAPREFS);
 
     /* TODO: settings
     systray_menu_add_separator(mis->menu);
