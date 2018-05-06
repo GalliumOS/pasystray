@@ -1,0 +1,5 @@
+pasystray (0.4.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #729205)
+
+ -- Scott Leggett <scott@sl.id.au>  Sun, 10 Nov 2013 18:00:59 +1100
