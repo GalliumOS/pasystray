@@ -1,5 +1,43 @@
+pasystray (0.6.0-1ubuntu1) yakkety; urgency=medium
+
+  * Merge from Debian unstable. Remaining changes:
+    - debian/control: Build-depend on libappindicator3-dev for indicator
+      support.
+
+ -- Logan Rosen <logan@ubuntu.com>  Fri, 22 Jul 2016 23:11:26 -0400
+
+pasystray (0.6.0-1) unstable; urgency=low
+
+  * New upstream release 0.6.0.
+  * Update debian/copyright.
+  * Bump Standards-Version to 3.9.8.
+
+ -- Scott Leggett <scott@sl.id.au>  Mon, 18 Jul 2016 23:19:07 +1000
+
+pasystray (0.5.2-1ubuntu1) yakkety; urgency=medium
+
+  * d/control: Build-dep on libappindicator3-dev for indicator support.
+
+ -- Unit 193 <unit193@ubuntu.com>  Thu, 02 Jun 2016 21:24:38 -0400
+
+pasystray (0.5.2-1) unstable; urgency=low
+
+  * New upstream release 0.5.2 (Closes: #792461)
+  * Remove .desktop file patch applied upstream.
+  * Update package VCS URLs.
+  * Bump Standards-Version from 3.9.4 to 3.9.7.
+  * Enable all hardening build options.
+  * Add "Suggests" dependency on pavucontrol, and expand long description.
+    (Closes: #792459)
+  * Remove manpage from package (accepted upstream).
+  * Remove Debian menu file in favour of .desktop file.
+  * Update copyright holder information.
+
+ -- Scott Leggett <scott@sl.id.au>  Wed, 27 Apr 2016 23:12:20 +1000
+
 pasystray (0.4.0-1) unstable; urgency=low
 
   * Initial release (Closes: #729205)
 
  -- Scott Leggett <scott@sl.id.au>  Sun, 10 Nov 2013 18:00:59 +1100
+

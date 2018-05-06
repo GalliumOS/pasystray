@@ -1,4 +1,5 @@
 .\" (C) Copyright 2013 Scott Leggett <scott@sl.id.au>,
+.\" (C) Copyright 2015 Christoph Gysin <christoph.gysin@gmail.com>
 .\"
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
@@ -40,9 +41,9 @@ rename devices
 .SH MOUSE BINDINGS
 Status icon:
 .IP \[bu]
-Middle-click: toggle mute, default sink
+Middle-click / Alt + Left-click: toggle mute, default sink
 .IP \[bu]
-Ctrl + Middle-click: toggle mute, default source
+Ctrl + Middle-click / Ctrl + Alt + Left-click: toggle mute, default source
 .IP \[bu]
 Scroll up/down: adjust volume, default sink
 .IP \[bu]
@@ -54,7 +55,7 @@ Scroll up/down: adjust volume
 .IP \[bu]
 Left-click: set as default sink/source
 .IP \[bu]
-Middle-click: toggle mute
+Middle-click / Alt + Left-click: toggle mute
 .IP \[bu]
 Right-click: rename
 .LP
@@ -65,14 +66,15 @@ Scroll up/down: adjust volume
 Middle-click: toggle mute
 .SH OPTIONAL PULSEAUDIO MODULES
 .B pasystray
-makes use of the following PulseAudio modules for some optional features:
+can make use of the following PulseAudio modules:
 .IP \[bu]
 module-device-manager - device renaming
 .IP \[bu]
 module-zeroconf-discover - network device discovery
 .LP
 These modules may need to be loaded, using e.g.
-.BR pactl (1).
+.BR pactl (1)
+or pasystray itself.
 .SH REMOTE SINKS/SOURCES
 In order to detect remote sinks/source, as well as enabling
 module-zeroconf-discover locally, module-zeroconf-publish must be enabled on
@@ -88,6 +90,24 @@ options starting with two dashes (`-').
 .TP
 .B \-V, \-\-version
 Show the program version.
+.TP
+.B \-d, \-\-debug
+Print debugging information.
+.TP
+.B \-m, \-\-volume-max=N
+Set the maximum volume (in percent).
+.TP
+.B \-i, \-\-volume-inc=N
+Set the volume increment.
+.TP
+.B \-n, \-\-no-notify
+Disable all notifications.
+.TP
+.B \-a, \-\-always-notify
+Enable notifications for all changes in pulsaudio.
+.TP
+.B \-\-include-monitors
+Show monitor sources.
 .SH SEE ALSO
 .BR pulseaudio (1),
 .BR pactl (1).

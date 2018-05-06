@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -30,6 +30,7 @@ void pulseaudio_set_default_success_cb(pa_context *c, int success, void *userdat
 
 void pulseaudio_move_input_to_sink(menu_info_item_t* input, menu_info_item_t* sink);
 void pulseaudio_move_output_to_source(menu_info_item_t* output, menu_info_item_t* source);
+void pulseaudio_move_all(menu_info_item_t* mii);
 void pulseaudio_move_success_cb(pa_context *c, int success, void *userdata);
 
 void pulseaudio_rename(menu_info_item_t* mii, const char* name);
@@ -41,5 +42,11 @@ void pulseaudio_update_volume_notification(menu_info_item_t* mii);
 
 void pulseaudio_toggle_mute(menu_info_item_t* mii);
 void pulseaudio_toggle_mute_success_cb(pa_context *c, int success, void *userdata);
+
+void pulseaudio_module_load(const char* name, const char* argument);
+void pulseaudio_module_load_success_cb(pa_context *c, uint32_t idx, void *userdata);
+
+void pulseaudio_module_unload(menu_info_item_t* mii);
+void pulseaudio_module_unload_success_cb(pa_context *c, int success, void *userdata);
 
 #endif /* PASYSTRAY_PULSEAUDIO_ACTION_H */

@@ -1,6 +1,6 @@
 #  This file is part of PaSystray
 #
-#  Copyright (C) 2011, 2012 Christoph Gysin
+#  Copyright (C) 2011-2016  Christoph Gysin
 #
 #  PaSystray is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Lesser General Public License as
@@ -19,7 +19,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([pasystray], [0.4.0], [christoph.gysin@gmail.com], [pasystray],
+AC_INIT([pasystray], [0.6.0], [christoph.gysin@gmail.com], [pasystray],
         [http://github.com/christophgysin/pasystray])
 AC_CONFIG_SRCDIR([src/pasystray.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -38,6 +38,7 @@ esac
 AC_MSG_RESULT($GTK_VERSION)
 
 PKG_CHECK_MODULES(GTK, [ $GTK_VERSION ])
+AC_DEFINE_UNQUOTED(GTK_VERSION_MAJOR, $with_gtk, [Have GTK version?])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
@@ -100,12 +101,28 @@ AM_CONDITIONAL([HAVE_X11], [test "x$HAVE_X11" = x1])
 AS_IF([test "x$HAVE_X11" = x1], AC_DEFINE([HAVE_X11], 1,
       [Have X11?]))
 
+### optional gtk stausicon support ###########################################
+AC_ARG_ENABLE([statusicon],
+    AS_HELP_STRING([--disable-statusicon], [Disable optional statusicon support]))
+
+AS_IF([test "x$enable_statusicon" != xno],
+    HAVE_STATUSICON=1, HAVE_STATUSICON=0)
+
+AC_SUBST(HAVE_STATUSICON)
+AM_CONDITIONAL([HAVE_STATUSICON], [test "x$HAVE_STATUSICON" = x1])
+AS_IF([test "x$HAVE_STATUSICON" = x1], AC_DEFINE([HAVE_STATUSICON], 1,
+      [Have StatusIcon?]))
+
 ### optional libappindicator support ###########################################
 AC_ARG_ENABLE([appindicator],
     AS_HELP_STRING([--disable-appindicator], [Disable optional appindicator support]))
 
+case ${with_gtk} in
+    2) APPINDICATOR_VERSION=appindicator-0.1;;
+    3) APPINDICATOR_VERSION=appindicator3-0.1;;
+esac
 AS_IF([test "x$enable_appindicator" != xno],
-    [PKG_CHECK_MODULES(APPINDICATOR, [ appindicator3-0.1 >= 12.10.0 ], HAVE_APPINDICATOR=1,
+    [PKG_CHECK_MODULES(APPINDICATOR, [ $APPINDICATOR_VERSION ], HAVE_APPINDICATOR=1,
                        HAVE_APPINDICATOR=0)], HAVE_APPINDICATOR=0)
 
 AS_IF([test "x$enable_appindicator" = xyes && test "x$HAVE_APPINDICATOR" = x0],
@@ -116,7 +133,7 @@ AC_SUBST(APPINDICATOR_LIBS)
 AC_SUBST(HAVE_APPINDICATOR)
 AM_CONDITIONAL([HAVE_APPINDICATOR], [test "x$HAVE_APPINDICATOR" = x1])
 AS_IF([test "x$HAVE_APPINDICATOR" = x1], AC_DEFINE([HAVE_APPINDICATOR], 1,
-      [Have APPINDICATOR?]))
+      [Have AppIndicator?]))
 ################################################################################
 
 if test "x$GCC" = xyes -o "x$CLANG" = xyes; then

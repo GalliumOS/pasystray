@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -25,6 +25,7 @@
 #include <pulse/ext-device-manager.h>
 
 #include "notify.h"
+#include "ui.h"
 #include "x11-property.h"
 
 extern pa_context* context;
@@ -51,6 +52,7 @@ void pulseaudio_set_default(menu_info_item_t* mii)
             break;
         case MENU_INPUT:
         case MENU_OUTPUT:
+        case MENU_MODULE:
             /* nothing to do here */
             break;
     }
@@ -62,21 +64,56 @@ void pulseaudio_set_default_success_cb(pa_context *c, int success, void *userdat
 {
     menu_info_item_t* mii = userdata;
 
-    if(!success)
-        g_error("failed to set default to %s \"%s\"!\n",
+    if(success)
+    {
+        if(mii->menu_info->type == MENU_SINK)
+            ui_update_systray_icon(mii);
+    }
+    else
+        g_warning("failed to set default to %s \"%s\"!\n",
                 menu_info_type_name(mii->menu_info->type), mii->name);
 }
 
 void pulseaudio_move_input_to_sink(menu_info_item_t* input, menu_info_item_t* sink)
 {
+    g_debug("[pulseaudio_action] move input %s to sink %s",
+            input->desc, sink->desc);
+
     pa_operation_unref(pa_context_move_sink_input_by_index(context, input->index,
                 sink->index, pulseaudio_move_success_cb, input));
 }
 
 void pulseaudio_move_output_to_source(menu_info_item_t* output, menu_info_item_t* source)
 {
+    g_debug("[pulseaudio_action] move output %s to source %s",
+            output->desc, source->desc);
+
     pa_operation_unref(pa_context_move_source_output_by_index(context, output->index,
                 source->index, pulseaudio_move_success_cb, output));
+}
+
+void pulseaudio_move_all(menu_info_item_t* mii)
+{
+    menu_infos_t* mis = mii->menu_info->menu_infos;
+    menu_type_t target_type = mii->menu_info->type;
+    menu_type_t source_type = (target_type == MENU_SINK) ? MENU_INPUT : MENU_OUTPUT;
+
+    g_debug("[pulseaudio_action] move all %s to %s %s",
+            menu_info_type_name(source_type),
+            menu_info_type_name(target_type),
+            mii->desc);
+
+    GHashTableIter iter;
+    gpointer key;
+    gpointer value;
+    g_hash_table_iter_init(&iter, mis->menu_info[MENU_INPUT].items);
+    while (g_hash_table_iter_next(&iter, &key, &value))
+    {
+        if (target_type == MENU_SINK)
+            pulseaudio_move_input_to_sink(value, mii);
+        else if (target_type == MENU_SOURCE)
+            pulseaudio_move_output_to_source(value, mii);
+    }
 }
 
 void pulseaudio_move_success_cb(pa_context *c, int success, void *userdata)
@@ -85,22 +122,21 @@ void pulseaudio_move_success_cb(pa_context *c, int success, void *userdata)
     menu_info_item_t* from = to->menu_info->parent;
 
     if(!success)
-        g_error("failed to move %s '%s' to %s '%s'!\n",
+        g_warning("failed to move %s '%s' to %s '%s'!\n",
                 menu_info_type_name(from->menu_info->type), from->name,
                 menu_info_type_name(to->menu_info->type), to->name);
 }
 
 void pulseaudio_rename(menu_info_item_t* mii, const char* name)
 {
-#ifdef DEBUG
-    g_message("rename %s '%s' to '%s'",
+    g_debug("rename %s '%s' to '%s'",
             menu_info_type_name(mii->menu_info->type), mii->desc, name);
-#endif
+
     char *key = g_markup_printf_escaped("%s:%s", menu_info_type_name(mii->menu_info->type), mii->name);
 
     pa_operation* o;
     if(!(o = pa_ext_device_manager_set_device_description(context, key, name, pulseaudio_rename_success_cb, mii))) {
-        g_error("pa_ext_device_manager_set_device_description(context, %s, %s) failed", key, name);
+        g_warning("pa_ext_device_manager_set_device_description(context, %s, %s) failed", key, name);
         return;
     }
     pa_operation_unref(o);
@@ -112,22 +148,26 @@ void pulseaudio_rename_success_cb(pa_context *c, int success, void *userdata)
 
     // TODO: try to autoload module-device-manager?
     if(!success)
-        g_warning("failed to rename %s '%s'! module-device-manager loaded?\n",
-                menu_info_type_name(mii->menu_info->type), mii->name);
+        menu_info_item_rename_error(mii);
 }
 
 void pulseaudio_volume(menu_info_item_t* mii, int inc)
 {
-#ifdef DEBUG
-    g_message("pulseaudio_volume(%s, %i)", mii->name, inc);
-#endif
+    g_debug("pulseaudio_volume(%s, %i)", mii->name, inc);
 
     /* increment/decrement in 2% steps */
     pa_cvolume* volume;
     if(inc < 0)
         volume = pa_cvolume_dec(mii->volume, -inc * PA_VOLUME_NORM / 50);
     else if(inc > 0)
-        volume = pa_cvolume_inc(mii->volume, inc * PA_VOLUME_NORM / 50);
+    {
+        int volume_max = mii->menu_info->menu_infos->settings.volume_max;
+        if(volume_max > 0)
+            volume = pa_cvolume_inc_clamp(mii->volume, inc * PA_VOLUME_NORM / 50,
+                    PA_VOLUME_NORM * volume_max / 100);
+        else
+            volume = pa_cvolume_inc(mii->volume, inc * PA_VOLUME_NORM / 50);
+    }
     else
         return;
 
@@ -136,6 +176,7 @@ void pulseaudio_volume(menu_info_item_t* mii, int inc)
     switch(mii->menu_info->type)
     {
         case MENU_SERVER:
+        case MENU_MODULE:
             /* nothing to do here */
             break;
         case MENU_SINK:
@@ -165,35 +206,42 @@ void pulseaudio_set_volume_success_cb(pa_context *c, int success, void *userdata
 
     if(!success)
     {
-        g_error("failed to set volume for %s \"%s\"!\n",
+        g_warning("failed to set volume for %s \"%s\"!\n",
                 menu_info_type_name(mii->menu_info->type), mii->name);
         return;
     }
 
-    pulseaudio_update_volume_notification(mii);
+    menu_infos_t* mis = mii->menu_info->menu_infos;
+
+    /* update sink icon */
+    if(mii->menu_info->type == MENU_SINK || mii->menu_info->type == MENU_SOURCE)
+        ui_set_volume_icon(mii);
+
+    if(mis->settings.notify != NOTIFY_NEVER)
+    {
+        pulseaudio_update_volume_notification(mii);
+    }
 }
 
 void pulseaudio_update_volume_notification(menu_info_item_t* mii)
 {
-    char vol[PA_CVOLUME_SNPRINT_MAX];
-    gchar* msg = g_strdup_printf("%s %s: %s%s",
-                menu_info_type_name(mii->menu_info->type), mii->desc,
-                pa_cvolume_snprint(vol, sizeof(vol), mii->volume),
-                mii->mute ? " [muted]" : "");
+    gchar* label = menu_info_item_label(mii);
+    gchar* msg = g_strdup_printf("%s %s",
+                menu_info_type_name(mii->menu_info->type), label);
+    g_free(label);
 
+    gint volume = (mii->volume->values[0]*100+PA_VOLUME_NORM/2)/PA_VOLUME_NORM;
     if(!mii->notify)
-        mii->notify = notify(msg, NULL, mii->icon);
+        mii->notify = notify(msg, NULL, mii->icon, volume);
     else
-        notify_update(mii->notify, msg, NULL, mii->icon);
+        notify_update(mii->notify, msg, NULL, mii->icon, volume);
 
     g_free(msg);
 }
 
 void pulseaudio_toggle_mute(menu_info_item_t* mii)
 {
-#ifdef DEBUG
-    g_message("pulseaudio_toggle_mute(%s)", mii->name);
-#endif
+    g_debug("pulseaudio_toggle_mute(%s)", mii->name);
 
     pa_operation* o = NULL;
 
@@ -202,6 +250,7 @@ void pulseaudio_toggle_mute(menu_info_item_t* mii)
     switch(mii->menu_info->type)
     {
         case MENU_SERVER:
+        case MENU_MODULE:
             /* nothing to do here */
             break;
         case MENU_SINK:
@@ -230,6 +279,36 @@ void pulseaudio_toggle_mute_success_cb(pa_context *c, int success, void *userdat
     menu_info_item_t* mii = userdata;
 
     if(!success)
-        g_error("failed to toogle mute for %s \"%s\"!\n",
+        g_warning("failed to toggle mute for %s \"%s\"!\n",
                 menu_info_type_name(mii->menu_info->type), mii->name);
+}
+
+void pulseaudio_module_load(const char* name, const char* argument)
+{
+    pa_operation_unref(pa_context_load_module(context, name, argument,
+                pulseaudio_module_load_success_cb, (void*)name));
+}
+
+void pulseaudio_module_load_success_cb(pa_context *c, uint32_t idx, void *userdata)
+{
+    const char* name = userdata;
+
+    if(idx == PA_INVALID_INDEX)
+        g_warning("failed to load module %s!\n", name);
+}
+
+void pulseaudio_module_unload(menu_info_item_t* mii)
+{
+    assert(mii->menu_info->type == MENU_MODULE);
+
+    pa_operation_unref(pa_context_unload_module(context, mii->index,
+                pulseaudio_module_unload_success_cb, mii));
+}
+
+void pulseaudio_module_unload_success_cb(pa_context *c, int success, void *userdata)
+{
+    menu_info_item_t* mii = userdata;
+
+    if(!success)
+        g_warning("failed to unload module %s!\n", mii->name);
 }

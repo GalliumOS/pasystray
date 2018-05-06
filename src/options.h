@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -22,8 +22,9 @@
 #ifndef PASYSTRAY_OPTIONS_H
 #define PASYSTRAY_OPTIONS_H
 
-extern gboolean version;
+#include "menu_info.h"
 
-void parse_options(int argc, char *argv[]);
+GOptionEntry* get_options();
+void parse_options(settings_t* settings);
 
 #endif /* PASYSTRAY_OPTIONS_H */

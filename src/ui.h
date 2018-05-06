@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -26,11 +26,12 @@
 #include <gtk/gtk.h>
 
 void ui_load();
+void ui_set_volume_icon(menu_info_item_t* mii);
 void ui_update_systray_icon(menu_info_item_t* mii);
-GtkAboutDialog* ui_aboutdialog();
-
+GtkDialog* ui_aboutdialog();
 GtkDialog* ui_renamedialog();
 GtkLabel* ui_renamedialog_label();
 GtkEntry* ui_renamedialog_entry();
+GtkDialog* ui_errordialog(const gchar* title, const gchar* message);
 
 #endif /* PASYSTRAY_UI_H */

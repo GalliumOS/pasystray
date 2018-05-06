@@ -3,11 +3,22 @@ Upstream-Name: pasystray
 Source: https://github.com/christophgysin/pasystray
 
 Files: *
-Copyright: 2011-2013 Christoph Gysin <christoph.gysin@gmail.com>
+Copyright: 2011-2016 Christoph Gysin <christoph.gysin@gmail.com>
+           2012-2013, 2015 Christoph Gysin <christoph.gysin@ericsson.com>
+           2012 pataquets <amontero@tinet.org>
+           2013 Fredrick <copypaste@bitlegend.com>
+           2013 Lukas Schneiderbauer <lukas.schneiderbauer@gmail.com>
+           2013 Volodymyr Medvid <vmmedvid@gmail.com>
+           2015 Andres Manz <manz.andres@gmail.com>
+           2015 quentin <quentin@minster.io>
+           2015 theGeekPirate <thegeekpirate@gmail.com>
+           2016 Michael Ilsaas <mikeri@mikeri.net>
+           2016 Michael Niewoehner <mniewoeh@stud.hs-offenburg.de>
+           2016 mniewoeh@stud.hs-offenburg.de <Michael Niewoehner>
 License: LGPL-2.1+
 
 Files: debian/*
-Copyright: 2013 Scott Leggett <scott@sl.id.au>
+Copyright: 2013-2016 Scott Leggett <scott@sl.id.au>
 License: LGPL-2.1+
 
 License: LGPL-2.1+

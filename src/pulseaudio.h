@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -28,8 +28,9 @@
 
 void pulseaudio_init(menu_infos_t* mis);
 void pulseaudio_destroy();
-void pulseaudio_prepare_context();
-void pulseaudio_connect();
+void pulseaudio_prepare_context(menu_infos_t* mis);
+void pulseaudio_connect(menu_infos_t* mis);
+void pulseaudio_reconnect(menu_infos_t* mis);
 void pulseaudio_start();
 
 void pulseaudio_context_state_cb(pa_context* c, void* userdata);
@@ -68,10 +69,13 @@ void pulseaudio_source_output_add_cb(pa_context* c, const pa_source_output_info*
 void pulseaudio_source_output_change_cb(pa_context* c, const pa_source_output_info* i, int is_last, void* userdata);
 void pulseaudio_source_output_add(const pa_source_output_info* i, int is_last, void* userdata, gboolean is_new);
 
+void pulseaudio_module_init_cb(pa_context* c, const pa_module_info* i, int is_last, void* userdata);
+void pulseaudio_module_add_cb(pa_context* c, const pa_module_info* i, int is_last, void* userdata);
+void pulseaudio_module_change_cb(pa_context* c, const pa_module_info* i, int is_last, void* userdata);
+void pulseaudio_module_add(const pa_module_info* i, int is_last, void* userdata, gboolean is_new);
+
 void pulseaudio_quit(const char* msg);
 
-#ifdef DEBUG
 void pulseaudio_print_event(pa_subscription_event_type_t t, uint32_t index);
-#endif
 
 #endif /* PASYSTRAY_PULSEAUDIO_H */

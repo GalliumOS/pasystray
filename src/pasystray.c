@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
   USA.
 ***/
 
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "pasystray.h"
@@ -31,22 +32,31 @@
 #include "avahi.h"
 #include "x11-property.h"
 
-GMainLoop* loop;
-menu_infos_t* mis;
+static GMainLoop* loop;
+static menu_infos_t* mis;
 
 int main(int argc, char *argv[])
 {
-    parse_options(argc, argv);
-    gtk_init(&argc, &argv);
+    GOptionEntry* options = get_options();
+    GError *error = NULL;
+    gtk_init_with_args(&argc, &argv, NULL, options, NULL, &error);
+    if(error)
+    {
+        g_print("option parsing failed: %s\n", error->message);
+        return EXIT_FAILURE;
+    }
 
-    init();
+    settings_t settings;
+    parse_options(&settings);
+
+    init(&settings);
     g_main_loop_run(loop);
     destroy();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-void init()
+void init(settings_t* settings)
 {
     loop = g_main_loop_new(NULL, FALSE);
 
@@ -59,6 +69,7 @@ void init()
     mis = menu_infos_create();
     systray_create(mis);
     menu_infos_init(mis);
+    mis->settings = *settings;
 
     pulseaudio_init(mis);
     avahi_start(mis);

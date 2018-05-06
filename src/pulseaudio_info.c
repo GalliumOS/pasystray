@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -301,6 +301,27 @@ char* output_info_str(const pa_source_output_info* i)
             (double) i->buffer_usec,
             (double) i->source_usec,
             i->resample_method ? i->resample_method : "n/a",
+            pl = pa_proplist_to_string_sep(i->proplist, "\n\t\t"));
+
+    pa_xfree(pl);
+
+    return str;
+}
+
+char* module_info_str(const pa_module_info* i)
+{
+    char *pl;
+
+    char* str = g_strdup_printf(
+            "Module #%u\n"
+            "Name: %s\n"
+            "Argument: %s\n"
+            "Used: %u\n"
+            "Properties:\n\t\t%s",
+            i->index,
+            i->name,
+            i->argument,
+            i->n_used,
             pl = pa_proplist_to_string_sep(i->proplist, "\n\t\t"));
 
     pa_xfree(pl);

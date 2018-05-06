@@ -1,2 +1,0 @@
-?package(pasystray):needs="X11" section="Applications/Sound"\
-  title="pasystray" command="/usr/bin/pasystray"

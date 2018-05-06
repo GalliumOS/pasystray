@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -36,8 +36,9 @@ typedef enum {
     MENU_SOURCE = 2,
     MENU_INPUT = 3,
     MENU_OUTPUT = 4,
+    MENU_MODULE = 5,
 } menu_type_t;
-enum { MENU_COUNT = 5 };
+enum { MENU_COUNT = 6 };
 
 typedef struct menu_infos_t_ menu_infos_t;
 typedef struct menu_info_t_ menu_info_t;
@@ -54,10 +55,25 @@ struct menu_info_t_ {
     char* default_name;
 };
 
+typedef enum {
+    NOTIFY_NEVER,
+    NOTIFY_DEFAULT,
+    NOTIFY_ALWAYS,
+} notify_t;
+
+struct settings_t_ {
+    int volume_max;
+    int volume_inc;
+    notify_t notify;
+    gboolean monitors;
+};
+typedef struct settings_t_ settings_t;
+
 struct menu_infos_t_ {
     systray_t systray;
     GtkMenuShell* menu;
     menu_info_t menu_info[MENU_COUNT];
+    settings_t settings;
 };
 
 struct menu_info_item_t_ {
@@ -90,6 +106,8 @@ void menu_info_item_destroy(menu_info_item_t* mii);
 
 const char* menu_info_type_name(menu_type_t type);
 menu_type_t menu_info_submenu_type(menu_type_t menu_type);
+char* menu_info_item_label(menu_info_item_t* mii);
+
 void menu_info_item_add(menu_info_t* mi, uint32_t index, const char* name,
         const char* desc, const pa_cvolume* vol, int mute, char* tooltip,
         const char* icon, const char* address, uint32_t target);
@@ -109,11 +127,16 @@ void menu_info_item_clicked(GtkWidget* item, GdkEventButton* event,
         menu_info_item_t* mii);
 void menu_info_item_scrolled(GtkWidget* item, GdkEventScroll* event,
         menu_info_item_t* mii);
-void menu_info_subitem_clicked(GtkWidget* item, GdkEvent* event,
+void menu_info_subitem_clicked(GtkWidget* item, GdkEventButton* event,
         menu_info_item_t* mii);
 
-void menu_info_item_rename_dialog(GtkWidget* item, GdkEventButton* event,
-        menu_info_item_t* mii);
+void menu_info_item_move_all_cb(GtkWidget* item, GdkEventButton* event, void* userdata);
+
+void menu_info_item_rename_cb(GtkWidget* item, GdkEventButton* event, void* userdata);
+void menu_info_item_rename_dialog(menu_info_item_t* mii);
+void menu_info_item_rename_error(menu_info_item_t* mii);
+
+void menu_info_module_unload_cb(GtkWidget* item, GdkEventButton* event, void* userdata);
 
 void menu_info_item_remove(menu_info_t* mi, uint32_t index);
 void menu_info_item_remove_by_name(menu_info_t* mi, const char* name);

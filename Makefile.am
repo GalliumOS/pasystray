@@ -1,6 +1,6 @@
 #  This file is part of PaSystray
 #
-#  Copyright (C) 2011, 2012 Christoph Gysin
+#  Copyright (C) 2011-2015  Christoph Gysin
 #
 #  PaSystray is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Lesser General Public License as
@@ -26,9 +26,17 @@ pixmaps_DATA = data/pasystray.png
 desktopdir = $(datadir)/applications
 desktop_DATA = data/pasystray.desktop
 
+xdgautostartdir = $(sysconfdir)/xdg/autostart
+xdgautostart_DATA = data/pasystray.desktop
+
+man_MANS = man/pasystray.1
+
 EXTRA_DIST = bootstrap.sh README.md LICENSE $(icons_DATA) $(pixmaps_DATA) $(desktop_DATA)
 
 SUBDIRS = src
 
 doc:
 	markdown_py README.md > README.html
+
+test:
+	@echo "no tests yet"
