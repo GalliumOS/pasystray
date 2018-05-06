@@ -1,21 +1,23 @@
 Source: pasystray
 Section: sound
 Priority: extra
-Maintainer: Scott Leggett <scott@sl.id.au>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Scott Leggett <scott@sl.id.au>
 Build-Depends:
  autotools-dev,
  debhelper (>= 9.0.0),
  dh-autoreconf,
+ libappindicator3-dev,
  libavahi-client-dev,
  libavahi-glib-dev,
  libgtk-3-dev,
  libnotify-dev,
  libpulse-dev,
  pkg-config
-Standards-Version: 3.9.4
+Standards-Version: 3.9.8
 Homepage: https://github.com/christophgysin/pasystray
-Vcs-Git: git://github.com/smlx/package-pasystray.git
-Vcs-Browser: https://github.com/smlx/package-pasystray
+Vcs-Git: https://gitlab.com/smlx/pasystray.git
+Vcs-Browser: https://gitlab.com/smlx/pasystray
 
 Package: pasystray
 Architecture: any
@@ -26,6 +28,7 @@ Depends:
 Suggests:
  paman,
  paprefs,
+ pavucontrol,
  pavumeter,
  pulseaudio-module-zeroconf
 Description: PulseAudio controller for the system tray
@@ -37,3 +40,9 @@ Description: PulseAudio controller for the system tray
     * set the default server (PULSE_SERVER)
     * detect network PulseAudio services
     * rename devices
+ .
+ The commands associated with the suggested dependencies (paman, paprefs,
+ pavucontrol, and pavumeter) may be launched from the menu provided by
+ pasystray. If a command is not available, that particular menu item is
+ disabled. pulseaudio-module-zeroconf enables detection and management of
+ network PulseAudio services.

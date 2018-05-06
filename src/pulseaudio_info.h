@@ -1,7 +1,7 @@
 /***
   This file is part of PaSystray
 
-  Copyright (C) 2011, 2012 Christoph Gysin
+  Copyright (C) 2011-2015  Christoph Gysin
 
   PaSystray is free software; you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as
@@ -30,5 +30,6 @@ char* sink_info_str(const pa_sink_info* i);
 char* source_info_str(const pa_source_info* i);
 char* input_info_str(const pa_sink_input_info* i);
 char* output_info_str(const pa_source_output_info* i);
+char* module_info_str(const pa_module_info* i);
 
 #endif /* PASYSTRAY_PULSEAUDIO_INFO_H */
