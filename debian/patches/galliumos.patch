@@ -17,48 +17,25 @@
  
              pa_context_set_subscribe_callback(context, pulseaudio_event_cb, mis);
              pa_operation_unref(pa_context_subscribe(context,
---- a/src/pulseaudio_action.c
-+++ b/src/pulseaudio_action.c
-@@ -126,9 +126,10 @@
-     pa_cvolume* volume;
-     if(inc < 0)
-         volume = pa_cvolume_dec(mii->volume, -inc * PA_VOLUME_NORM / 50);
--    else if(inc > 0)
--        volume = pa_cvolume_inc(mii->volume, inc * PA_VOLUME_NORM / 50);
--    else
-+    else if(inc > 0) {
-+	volume = pa_cvolume_inc_clamp(mii->volume, inc * PA_VOLUME_NORM / 50,
-+				      PA_VOLUME_NORM * 100 / 100);
-+    } else
-         return;
- 
-     pa_operation* o = NULL;
-@@ -169,8 +170,6 @@
-                 menu_info_type_name(mii->menu_info->type), mii->name);
-         return;
-     }
--
--    pulseaudio_update_volume_notification(mii);
- }
- 
- void pulseaudio_update_volume_notification(menu_info_item_t* mii)
---- a/src/systray.c
-+++ b/src/systray.c
-@@ -44,17 +44,9 @@
-     systray_rootmenu_add_submenu(mis, MENU_OUTPUT, "Recording Stre_ams", "player_record");
-     systray_menu_add_separator(mis->menu);
- 
--    static const char* COMMAND_PAMAN = "paman";
-     static const char* COMMAND_PAVUCONTROL = "pavucontrol";
--    static const char* COMMAND_PAVUMETER = "pavumeter";
--    static const char* COMMAND_PAVUMETER_REC = "pavumeter --record";
--    static const char* COMMAND_PAPREFS = "paprefs";
- 
--    systray_menu_add_application(mis->menu, "_Manager...", NULL, COMMAND_PAMAN);
-     systray_menu_add_application(mis->menu, "Volume _Control...", NULL, COMMAND_PAVUCONTROL);
--    systray_menu_add_application(mis->menu, "Volume Meter (_Playback)...", NULL, COMMAND_PAVUMETER);
--    systray_menu_add_application(mis->menu, "Volume Meter (_Recording)...", NULL, COMMAND_PAVUMETER_REC);
--    systray_menu_add_application(mis->menu, "Con_figure Local Sound Server...", NULL, COMMAND_PAPREFS);
- 
-     /* TODO: settings
-     systray_menu_add_separator(mis->menu);
+##
+## This diff does not apply. Update or drop..?
+#--- a/src/systray.c
+#+++ b/src/systray.c
+#@@ -44,17 +44,9 @@
+#     systray_rootmenu_add_submenu(mis, MENU_OUTPUT, "Recording Stre_ams", "player_record");
+#     systray_menu_add_separator(mis->menu);
+# 
+#-    static const char* COMMAND_PAMAN = "paman";
+#     static const char* COMMAND_PAVUCONTROL = "pavucontrol";
+#-    static const char* COMMAND_PAVUMETER = "pavumeter";
+#-    static const char* COMMAND_PAVUMETER_REC = "pavumeter --record";
+#-    static const char* COMMAND_PAPREFS = "paprefs";
+# 
+#-    systray_menu_add_application(mis->menu, "_Manager...", NULL, COMMAND_PAMAN);
+#     systray_menu_add_application(mis->menu, "Volume _Control...", NULL, COMMAND_PAVUCONTROL);
+#-    systray_menu_add_application(mis->menu, "Volume Meter (_Playback)...", NULL, COMMAND_PAVUMETER);
+#-    systray_menu_add_application(mis->menu, "Volume Meter (_Recording)...", NULL, COMMAND_PAVUMETER_REC);
+#-    systray_menu_add_application(mis->menu, "Con_figure Local Sound Server...", NULL, COMMAND_PAPREFS);
+# 
+#     /* TODO: settings
+#     systray_menu_add_separator(mis->menu);
